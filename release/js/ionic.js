@@ -4783,6 +4783,7 @@ ionic.views.Scroll = ionic.views.View.inherit({
     self.onScroll = function() {
 
       if (!ionic.scroll.isScrolling) {
+        //teamleader change
         setTimeout(self.setScrollStart, 50);
       } else {
         clearTimeout(self.scrollTimer);
@@ -4802,6 +4803,8 @@ ionic.views.Scroll = ionic.views.View.inherit({
       ionic.scroll.isScrolling = Math.abs(ionic.scroll.lastTop - self.__scrollTop) > 1;
       clearTimeout(self.scrollTimer);
       self.scrollTimer = setTimeout(self.setScrollStop, 80);
+      //Teamleader tl_change
+     // self.options.freezeAllScrolls(true);
     };
 
     self.setScrollStop = function() {
@@ -8097,11 +8100,18 @@ ionic.views.Slider = ionic.views.View.inherit({
     var index = parseInt(options.startSlide, 10) || 0;
     var speed = options.speed || 300;
     options.continuous = options.continuous !== undefined ? options.continuous : true;
-
+    var setupCounter = 0;
     function setup() {
-
+      //TEAMLEADER TL_CHANGE
       // do not setup if the container has no width
+
       if (!container.offsetWidth) {
+        setupCounter++
+        if(setupCounter < 10){
+          setTimeout(function(){
+            setup();
+          },100);
+        }
         return;
       }
 
@@ -8387,7 +8397,8 @@ ionic.views.Slider = ionic.views.View.inherit({
         };
 
         // determine if scrolling test has run - one time test
-        if ( typeof isScrolling == 'undefined') {
+        //TL_CHANGE
+        if ( typeof isScrolling == 'undefined' || isScrolling == false) {
           isScrolling = !!( isScrolling || Math.abs(delta.x) < Math.abs(delta.y) );
         }
 
@@ -8423,6 +8434,10 @@ ionic.views.Slider = ionic.views.View.inherit({
             translate(index, delta.x + slidePos[index], 0);
             translate(index + 1, delta.x + slidePos[index + 1], 0);
           }
+          //TEAMLEADER TL_CHANGE locks after 25pixel swipe
+           if(Math.abs(delta.x)<25){
+            return;
+           }
 
           options.onDrag && options.onDrag();
         }
@@ -8434,9 +8449,10 @@ ionic.views.Slider = ionic.views.View.inherit({
         var duration = +new Date() - start.time;
 
         // determine if slide attempt triggers next/prev slide
+        //TEAMLEADER TL_CHANGE
         var isValidSlide =
               Number(duration) < 250 &&         // if slide duration is less than 250ms
-              Math.abs(delta.x) > 20 ||         // and if slide amt is greater than 20px
+              (Math.abs(delta.x) > 20 && (Math.abs(delta.y)<Math.abs(delta.x))) ||         // and if slide amt is greater than 20px
               Math.abs(delta.x) > width / 2;      // or if slide amt is greater than half the width
 
         // determine if slide attempt is past start and end
@@ -8448,8 +8464,8 @@ ionic.views.Slider = ionic.views.View.inherit({
         // determine direction of swipe (true:right, false:left)
         var direction = delta.x < 0;
 
-        // if not scrolling vertically
-        if (!isScrolling) {
+        // if not scrolling vertically TL_CHANGE
+       // if (!isScrolling) {
 
           if (isValidSlide && !isPastBounds) {
 
@@ -8502,8 +8518,8 @@ ionic.views.Slider = ionic.views.View.inherit({
             }
 
           }
-
-        }
+  //TL_CHANGE
+       // }
 
         // kill touchmove and touchend event listeners until touchstart called again
         if(browser.touch) {

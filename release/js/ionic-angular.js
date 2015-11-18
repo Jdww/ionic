@@ -5053,12 +5053,23 @@ IonicModule.config([
 function($provide) {
   function $LocationDecorator($location, $timeout) {
 
+    //TL_CHANGE TEAMLEADER
+    return $location;
+
+
+
+
+
+
+
+
+
     $location.__hash = $location.hash;
     //Fix: when window.location.hash is set, the scrollable area
     //found nearest to body's scrollTop is set to scroll to an element
     //with that ID.
     $location.hash = function(value) {
-      if (isDefined(value) && value.length > 0) {
+      if (isDefined(value)) {
         $timeout(function() {
           var scroll = document.querySelector('.scroll-content');
           if (scroll) {
@@ -5532,16 +5543,20 @@ function($scope, $attrs, $element, $timeout) {
 
   // determine the threshold at which we should fire an infinite scroll
   // note: this gets processed every scroll event, can it be cached?
+  //TL_CHANGE teamleader check if self.scrollview error getscrollmax
   self.getJSMaxScroll = function() {
-    var maxValues = self.scrollView.getScrollMax();
-    return {
-      left: self.scrollView.options.scrollingX ?
-        calculateMaxValue(maxValues.left) :
-        -1,
-      top: self.scrollView.options.scrollingY ?
-        calculateMaxValue(maxValues.top) :
-        -1
-    };
+    if(self.scrollView){
+      var maxValues = self.scrollView.getScrollMax();
+      return {
+        left: self.scrollView.options.scrollingX ?
+            calculateMaxValue(maxValues.left) :
+            -1,
+        top: self.scrollView.options.scrollingY ?
+            calculateMaxValue(maxValues.top) :
+            -1
+      };
+    }
+
   };
 
   self.getNativeMaxScroll = function() {
@@ -7141,17 +7156,21 @@ function($scope,
       $element && $element.triggerHandler('scroll-resize');
     });
   };
-
+//TEAMLEADER TL_CHANGE check if scrollview
   self.scrollTop = function(shouldAnimate) {
     self.resize().then(function() {
-      scrollView.scrollTo(0, 0, !!shouldAnimate);
+      if(scrollView){
+        scrollView.scrollTo(0, 0, !!shouldAnimate);
+      }
     });
   };
-
+//TEAMLEADER TL_CHANGE check if scrollview
   self.scrollBottom = function(shouldAnimate) {
     self.resize().then(function() {
-      var max = scrollView.getScrollMax();
-      scrollView.scrollTo(max.left, max.top, !!shouldAnimate);
+      if(scrollView){
+        var max = scrollView.getScrollMax();
+        scrollView.scrollTo(max.left, max.top, !!shouldAnimate);
+      }
     });
   };
 
@@ -7204,8 +7223,9 @@ function($scope,
     for (var i = 0; i < $ionicScrollDelegate._instances.length; i++) {
       $ionicScrollDelegate._instances[i].freezeScroll(shouldFreeze);
     }
-  };
-
+    };
+  //TEAMLEADER
+  scrollView.options.freezeAllScrolls = self.freezeAllScrolls;
 
   /**
    * @private
